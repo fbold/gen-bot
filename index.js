@@ -83,7 +83,7 @@ client.on("messageCreate", async (msg) => {
     const quotes = await db.getAllQuotes()
     let text = "```"
     for (var i = 0; i < quotes.length; i++) {
-      let newText = `\n${i + 1}: "${quotes[i]}"`
+      let newText = `\n${i + 1}: "${quotes[i].text}"`
       if (newText.length + text.length >= 2000) {
         text += "```"
         msg.channel.send(text)
