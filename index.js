@@ -1,18 +1,47 @@
-const { Client, Intents, MessageEmbed} = require("discord.js")
+const { dateGe } = require("@sapphire/shapeshift")
+const { Client, Intents, MessageEmbed } = require("discord.js")
 // const Database = require("@replit/database")
 const keepAlive = require("./server.js")
+const client = new Client({
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+})
+const db = require("./db")
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] })
-// const db = new Database()
-
-const gen = ["...", "...", "Què volsss?", "...", "QUÈ!?", "[gen noises]", "Pro què volsssss?", "estupid del mon contemporani...", "...", "...", "...", "Bueno què!?", "Putu imbècil", "que ets estúpit", "espuuupit", "...", "...", "...", "...", "...", "ai estava empanat", "...", ".....", "Bueno ja prou no? Ja està. Prou, he hagut d'intervenir jo, el creador d'aquest bot i súbdit leal del gran Gen, aka Surak. Has arribat al final d'aquest array de respostes, només s'aconsegueix arribar aquí fent el que tu has fet. Molt be noi, has trobat l'únic (?:eyes:?) easter egg d'aquest bot, vols un premi? Subnormal.", "................", "FUCKING SHIT", "...."]
+const gen = [
+  "...",
+  "...",
+  "Què volsss?",
+  "...",
+  "QUÈ!?",
+  "[gen noises]",
+  "Pro què volsssss?",
+  "estupid del mon contemporani...",
+  "...",
+  "...",
+  "...",
+  "Bueno què!?",
+  "Putu imbècil",
+  "que ets estúpit",
+  "espuuupit",
+  "...",
+  "...",
+  "...",
+  "...",
+  "...",
+  "ai estava empanat",
+  "...",
+  ".....",
+  "Bueno ja prou no? Ja està. Prou, he hagut d'intervenir jo, el creador d'aquest bot i súbdit leal del gran Gen, aka Surak. Has arribat al final d'aquest array de respostes, només s'aconsegueix arribar aquí fent el que tu has fet. Molt be noi, has trobat l'únic (?:eyes:?) easter egg d'aquest bot, vols un premi? Subnormal.",
+  "................",
+  "FUCKING SHIT",
+  "....",
+]
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
-  
 })
 
-client.on('debug', console.log);
+client.on("debug", console.log)
 
 // db.get("gen_quotes").then(quotes => {
 //   if (!quotes || quotes.length < 1) {
@@ -59,81 +88,88 @@ function getRandomIndex(quotes) {
 
 let genCounter = 0
 
-client.on("messageCreate", msg => {
+client.on("messageCreate", async (msg) => {
   if (msg.author.bot) return
-  console.log("Received message:",msg.content)
+  console.log("Received message:", msg.content)
 
   const msgContent = msg.content.toLowerCase()
 
   if (msgContent === "gen quote") {
-    // getGenQuote().then(quote => msg.channel.send(quote))
-    // genCounter = 0
-  }
-  else if (msgContent === "gen") {
-    if (genCounter >= gen.length) genCounter = 0
-    
-      msg.channel.send(gen[genCounter])
-      genCounter += 1
-  }
-  else if (msgContent.startsWith("gen add quote")) {
-    // addGenQuote(msg.content.split("gen add quote ")[1])
-    //msg.channel.send("Buah aquesta es bona, si o no? jejeje si o no!?").then(sentMessage => sentMessage.delete({ timeout: 3000 }))
-    msg.react("✅")
-    msg.delete({ timeout: 3000 })
+    const quote = await db.getRandomQuote(lastNQuotes)
+    if (!quote?.length) return
+    lastNQuotes.push(quote[0]._id)
+    if (lastNQuotes.length > process.env.QUOTE_REPEAT_THRESHOLD)
+      lastNQuotes.shift()
+    msg.channel.send(quote ? quote[0].text : "No quotes found")
     genCounter = 0
-  }
-  else if (msgContent.startsWith("gen del quote") || msgContent.startsWith("gen delete quote")) {
-    // delGenQuote(msg.content.split("gen del quote ")[1])
+  } else if (msgContent === "gen") {
+    if (genCounter >= gen.length) genCounter = 0
+    msg.channel.send(gen[genCounter])
+    genCounter += 1
+  } else if (msgContent.startsWith("gen add quote")) {
+    await db.addQuote(msg.content.split("gen add quote ")[1])
+    console.log(msg)
+    msg.react("✅")
+    msg.delete(3000)
+    genCounter = 0
+  } else if (
+    msgContent.startsWith("gen del quote") ||
+    msgContent.startsWith("gen delete quote")
+  ) {
     msg.channel.send("Foraaa! jejejejeje")
     msg.react("🗑️")
     genCounter = 0
-  }
-  else if (msgContent.startsWith("gen list quote") || msgContent.startsWith("gen list quotes")) {
-    // db.get("gen_quotes").then(quotes => {
-    //   let text = "```"
-    //   for (var i = 0; i < quotes.length; i++) {
-    //     let newText = `\n${i + 1}: "${quotes[i]}"`
-    //     if (newText.length + text.length >= 2000) {
-    //       text += "```"
-    //       msg.channel.send(text)
-    //       text = "```" + newText
-    //     } else {
-    //       text = text + newText
-    //     }
-    //   }
-    //   text += "```"
-    //   msg.channel.send(text)
+  } else if (
+    msgContent.startsWith("gen list quote") ||
+    msgContent.startsWith("gen list quotes")
+  ) {
+    const quotes = await db.getAllQuotes()
+    let text = "```"
+    for (var i = 0; i < quotes.length; i++) {
+      let newText = `\n${i + 1}: "${quotes[i]}"`
+      if (newText.length + text.length >= 2000) {
+        text += "```"
+        msg.channel.send(text)
+        text = "```" + newText
+      } else {
+        text = text + newText
+      }
+    }
+    text += "```"
+    msg.channel.send(text)
 
-    // })
     genCounter = 0
-  }
-  else if (msgContent.startsWith("gen help")) {
+  } else if (msgContent.startsWith("gen help")) {
     msg.reply(`Valla estupit! Que vols ara!? Ah, els comandos, valla subnormal...
 \`\`\`gen quote          - una quote classica d'en gen
 gen add quote      - per si ets prou intelligent per afegir una quote a la llista
 gen delete quote n - per si vols treure una quote que ha posat un imbècil (n es el número de la quote)
 gen list quote     - la llista dels quotes d'en gen \`\`\``)
     genCounter = 0
-  }
-  else if (msgContent.startsWith("gen porn")) {
+  } else if (msgContent.startsWith("gen porn")) {
     const genEmbed = new MessageEmbed()
-      .setColor('#FFC0CB')
+      .setColor("#FFC0CB")
       // .setTitle('Hey sexy... 😘')
-      .setImage('https://media.discordapp.net/attachments/522167253639102494/953378153810767952/memejan.jpg')
+      .setImage(
+        "https://media.discordapp.net/attachments/522167253639102494/953378153810767952/memejan.jpg"
+      )
 
-    msg.channel.send({ embeds: [genEmbed] });
-  }
-  else if (msgContent.startsWith("gen hola") || msgContent.startsWith("gen hello")) {
+    msg.channel.send({ embeds: [genEmbed] })
+  } else if (
+    msgContent.startsWith("gen hola") ||
+    msgContent.startsWith("gen hello")
+  ) {
     const genEmbed = new MessageEmbed()
-      .setColor('#ffffff')
-      .setTitle('Eii')
-      .setImage('https://media.discordapp.net/attachments/427459241415147532/974783101588897852/gen.gif')
-    msg.channel.send({ embeds: [genEmbed] });
-  }
-  else if (msgContent.startsWith("gen ping")) {
+      .setColor("#ffffff")
+      .setTitle("Eii")
+      .setImage(
+        "https://media.discordapp.net/attachments/427459241415147532/974783101588897852/gen.gif"
+      )
+    msg.channel.send({ embeds: [genEmbed] })
+  } else if (msgContent.startsWith("gen ping")) {
     msg.channel.send("pong, bitch")
   }
 })
 
 keepAlive()
-client.login(process.env.TOKEN).catch(console.error)
+client.login(process.env.DISCORD_TOKEN).catch(console.error)
