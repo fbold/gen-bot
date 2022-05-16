@@ -1,6 +1,4 @@
-const { dateGe } = require("@sapphire/shapeshift")
 const { Client, Intents, MessageEmbed } = require("discord.js")
-// const Database = require("@replit/database")
 const keepAlive = require("./server.js")
 const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
@@ -43,48 +41,7 @@ client.on("ready", () => {
 
 client.on("debug", console.log)
 
-// db.get("gen_quotes").then(quotes => {
-//   if (!quotes || quotes.length < 1) {
-//     console.log("setting default quote")
-//     // db.set("gen_quotes", ["EH!?"])
-//   }
-// })
-
-// function addGenQuote(genQuote) {
-//   db.get("gen_quotes").then(quotes => {
-//     quotes.push(genQuote)
-//     // db.set("gen_quotes", quotes)
-//   })
-// }
-
-// function delGenQuote(index) {
-//   db.get("gen_quotes").then(quotes => {
-//     quotes.splice(parseInt(index) - 1, 1)
-//     db.set("gen_quotes", quotes)
-//   })
-// }
-
 let lastNQuotes = []
-
-// function getGenQuote() {
-//   return db.get("gen_quotes").then(quotes => {
-//     let randomIndex = getRandomIndex(quotes)
-//     while (lastNQuotes.includes(randomIndex)) {
-//       console.log(randomIndex + "Getting new quote to avoid recent repeats")
-//       randomIndex = getRandomIndex(quotes)
-//     }
-//     lastNQuotes.push(randomIndex)
-//     if (lastNQuotes.length > 5) {
-//       lastNQuotes.shift()
-//     }
-//     console.log(lastNQuotes)
-//     return quotes[randomIndex]
-//   })
-// }
-
-function getRandomIndex(quotes) {
-  return Math.floor(Math.random() * quotes.length)
-}
 
 let genCounter = 0
 
