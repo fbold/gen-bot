@@ -1,5 +1,4 @@
 const { Client, Intents, MessageEmbed } = require("discord.js")
-const keepAlive = require("./server.js")
 const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 })
@@ -128,5 +127,4 @@ gen list quote     - la llista dels quotes d'en gen \`\`\``)
   }
 })
 
-keepAlive()
 client.login(process.env.DISCORD_TOKEN).catch(console.error)
