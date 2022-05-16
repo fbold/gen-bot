@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,11 @@
   },
   "homepage": "https://github.com/Vurak/gen-bot#readme",
   "engines": {
-    "node": "14.x"
+    "node": "16.x"
+  },
+  "dependencies": {
+    "discord.js": "^13.7.0",
+    "express": "^4.18.1",
+    "mongoose": "^6.3.3"
   }
 }

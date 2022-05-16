@@ -1,9 +1,9 @@
 const { Client, Intents, MessageEmbed} = require("discord.js")
-const Database = require("@replit/database")
+// const Database = require("@replit/database")
 const keepAlive = require("./server.js")
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] })
-const db = new Database()
+// const db = new Database()
 
 const gen = ["...", "...", "Què volsss?", "...", "QUÈ!?", "[gen noises]", "Pro què volsssss?", "estupid del mon contemporani...", "...", "...", "...", "Bueno què!?", "Putu imbècil", "que ets estúpit", "espuuupit", "...", "...", "...", "...", "...", "ai estava empanat", "...", ".....", "Bueno ja prou no? Ja està. Prou, he hagut d'intervenir jo, el creador d'aquest bot i súbdit leal del gran Gen, aka Surak. Has arribat al final d'aquest array de respostes, només s'aconsegueix arribar aquí fent el que tu has fet. Molt be noi, has trobat l'únic (?:eyes:?) easter egg d'aquest bot, vols un premi? Subnormal.", "................", "FUCKING SHIT", "...."]
 
@@ -14,44 +14,44 @@ client.on("ready", () => {
 
 client.on('debug', console.log);
 
-db.get("gen_quotes").then(quotes => {
-  if (!quotes || quotes.length < 1) {
-    console.log("setting default quote")
-    db.set("gen_quotes", ["EH!?"])
-  }
-})
+// db.get("gen_quotes").then(quotes => {
+//   if (!quotes || quotes.length < 1) {
+//     console.log("setting default quote")
+//     // db.set("gen_quotes", ["EH!?"])
+//   }
+// })
 
-function addGenQuote(genQuote) {
-  db.get("gen_quotes").then(quotes => {
-    quotes.push(genQuote)
-    db.set("gen_quotes", quotes)
-  })
-}
+// function addGenQuote(genQuote) {
+//   db.get("gen_quotes").then(quotes => {
+//     quotes.push(genQuote)
+//     // db.set("gen_quotes", quotes)
+//   })
+// }
 
-function delGenQuote(index) {
-  db.get("gen_quotes").then(quotes => {
-    quotes.splice(parseInt(index) - 1, 1)
-    db.set("gen_quotes", quotes)
-  })
-}
+// function delGenQuote(index) {
+//   db.get("gen_quotes").then(quotes => {
+//     quotes.splice(parseInt(index) - 1, 1)
+//     db.set("gen_quotes", quotes)
+//   })
+// }
 
 let lastNQuotes = []
 
-function getGenQuote() {
-  return db.get("gen_quotes").then(quotes => {
-    let randomIndex = getRandomIndex(quotes)
-    while (lastNQuotes.includes(randomIndex)) {
-      console.log(randomIndex + "Getting new quote to avoid recent repeats")
-      randomIndex = getRandomIndex(quotes)
-    }
-    lastNQuotes.push(randomIndex)
-    if (lastNQuotes.length > 5) {
-      lastNQuotes.shift()
-    }
-    console.log(lastNQuotes)
-    return quotes[randomIndex]
-  })
-}
+// function getGenQuote() {
+//   return db.get("gen_quotes").then(quotes => {
+//     let randomIndex = getRandomIndex(quotes)
+//     while (lastNQuotes.includes(randomIndex)) {
+//       console.log(randomIndex + "Getting new quote to avoid recent repeats")
+//       randomIndex = getRandomIndex(quotes)
+//     }
+//     lastNQuotes.push(randomIndex)
+//     if (lastNQuotes.length > 5) {
+//       lastNQuotes.shift()
+//     }
+//     console.log(lastNQuotes)
+//     return quotes[randomIndex]
+//   })
+// }
 
 function getRandomIndex(quotes) {
   return Math.floor(Math.random() * quotes.length)
@@ -66,8 +66,8 @@ client.on("messageCreate", msg => {
   const msgContent = msg.content.toLowerCase()
 
   if (msgContent === "gen quote") {
-    getGenQuote().then(quote => msg.channel.send(quote))
-    genCounter = 0
+    // getGenQuote().then(quote => msg.channel.send(quote))
+    // genCounter = 0
   }
   else if (msgContent === "gen") {
     if (genCounter >= gen.length) genCounter = 0
@@ -76,35 +76,35 @@ client.on("messageCreate", msg => {
       genCounter += 1
   }
   else if (msgContent.startsWith("gen add quote")) {
-    addGenQuote(msg.content.split("gen add quote ")[1])
+    // addGenQuote(msg.content.split("gen add quote ")[1])
     //msg.channel.send("Buah aquesta es bona, si o no? jejeje si o no!?").then(sentMessage => sentMessage.delete({ timeout: 3000 }))
     msg.react("✅")
     msg.delete({ timeout: 3000 })
     genCounter = 0
   }
   else if (msgContent.startsWith("gen del quote") || msgContent.startsWith("gen delete quote")) {
-    delGenQuote(msg.content.split("gen del quote ")[1])
+    // delGenQuote(msg.content.split("gen del quote ")[1])
     msg.channel.send("Foraaa! jejejejeje")
     msg.react("🗑️")
     genCounter = 0
   }
   else if (msgContent.startsWith("gen list quote") || msgContent.startsWith("gen list quotes")) {
-    db.get("gen_quotes").then(quotes => {
-      let text = "```"
-      for (var i = 0; i < quotes.length; i++) {
-        let newText = `\n${i + 1}: "${quotes[i]}"`
-        if (newText.length + text.length >= 2000) {
-          text += "```"
-          msg.channel.send(text)
-          text = "```" + newText
-        } else {
-          text = text + newText
-        }
-      }
-      text += "```"
-      msg.channel.send(text)
+    // db.get("gen_quotes").then(quotes => {
+    //   let text = "```"
+    //   for (var i = 0; i < quotes.length; i++) {
+    //     let newText = `\n${i + 1}: "${quotes[i]}"`
+    //     if (newText.length + text.length >= 2000) {
+    //       text += "```"
+    //       msg.channel.send(text)
+    //       text = "```" + newText
+    //     } else {
+    //       text = text + newText
+    //     }
+    //   }
+    //   text += "```"
+    //   msg.channel.send(text)
 
-    })
+    // })
     genCounter = 0
   }
   else if (msgContent.startsWith("gen help")) {
