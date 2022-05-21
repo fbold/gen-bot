@@ -44,6 +44,28 @@ let lastNQuotes = []
 
 let genCounter = 0
 
+let latestQuotesMap = {}
+
+const buildQuoteList = (quotes) => {
+  latestQuotesMap = {}
+  let parts = []
+  console.log(quotes)
+  let acc = "```"
+  quotes.forEach((quote, i) => {
+    const new_ = `\n${i + 1}: "${quote.text}"`
+    latestQuotesMap[i + 1] = quote._id
+    if (acc.length + new_.length >= 1996) {
+      acc += "```"
+      parts.push(acc)
+      acc = "```" + new_
+    } else {
+      acc += new_
+    }
+  })
+  acc += "```"
+  return [...parts, acc]
+}
+
 client.on("messageCreate", async (msg) => {
   if (msg.author.bot) return
   console.log("Received message:", msg.content)
@@ -72,28 +94,22 @@ client.on("messageCreate", async (msg) => {
     msgContent.startsWith("gen del quote") ||
     msgContent.startsWith("gen delete quote")
   ) {
-    msg.channel.send("Foraaa! jejejejeje")
-    msg.react("🗑️")
+    const quoteNum = msg.content.split("gen del quote ")[1]
+    const quoteID = latestQuotesMap[quoteNum]
+    if (quoteID) {
+      await db.deleteQuoteByID(quoteID)
+      msg.react("🗑️")
+    } else {
+      msg.channel.send("No la trobo sucnormal")
+    }
     genCounter = 0
   } else if (
     msgContent.startsWith("gen list quote") ||
     msgContent.startsWith("gen list quotes")
   ) {
     const quotes = await db.getAllQuotes()
-    let text = "```"
-    for (var i = 0; i < quotes.length; i++) {
-      let newText = `\n${i + 1}: "${quotes[i].text}"`
-      if (newText.length + text.length >= 2000) {
-        text += "```"
-        msg.channel.send(text)
-        text = "```" + newText
-      } else {
-        text = text + newText
-      }
-    }
-    text += "```"
-    msg.channel.send(text)
-
+    const listParts = buildQuoteList(quotes)
+    listParts.forEach((part) => msg.channel.send(part))
     genCounter = 0
   } else if (msgContent.startsWith("gen help")) {
     msg.reply(`Valla estupit! Que vols ara!? Ah, els comandos, valla subnormal...

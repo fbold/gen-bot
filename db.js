@@ -21,7 +21,11 @@ const getAllQuotes = async () => {
 }
 
 const getQuoteByID = async (id) => {
-  return await models.quote.find({ id })
+  return await models.quote.findById(id)
+}
+
+const deleteQuoteByID = async (id) => {
+  return await models.quote.findByIdAndDelete(id)
 }
 
 const getRandomQuote = async (excludeIDs) => {
@@ -35,5 +39,6 @@ module.exports = {
   addQuote,
   getAllQuotes,
   getQuoteByID,
+  deleteQuoteByID,
   getRandomQuote,
 }
