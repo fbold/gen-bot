@@ -139,6 +139,17 @@ gen list quote     - la llista dels quotes d'en gen \`\`\``)
         "https://media.discordapp.net/attachments/427459241415147532/974783101588897852/gen.gif"
       )
     msg.channel.send({ embeds: [genEmbed] })
+  } else if (msgContent.startsWith("gen forum")) {
+    msg.channel.send(`
+<@&701195716806180875>
+Eiiii estupits, hora d'organitzer el següent gen forum
+Vot de dies:
+  1. divendre?
+  2. dissabte
+  3. diumenges les meves boles
+
+vota amb reaccions sispli
+    `)
   } else if (msgContent.startsWith("gen ping")) {
     msg.channel.send("pong, bitch")
   }
