@@ -147,6 +147,14 @@ gen list quote     - la llista dels quotes d'en gen \`\`\``)
         "https://media.discordapp.net/attachments/507558260790919200/980564554985652274/InShot_20220529_211237857.jpg"
       )
     msg.channel.send({ embeds: [genEmbed] })
+  } else if (msgContent.startsWith("gen turtle")) {
+    const genEmbed = new MessageEmbed()
+      .setColor("#75b84f")
+      .setTitle("🐢🐢🐢🐢🐢🐢🐢")
+      .setImage(
+        "https://media.discordapp.net/attachments/427459241415147532/996504910591955034/gen-turtle-crop.jpg"
+      )
+    msg.channel.send({ embeds: [genEmbed] })
   } else if (msgContent.startsWith("gen forum")) {
     msg.channel.send(`
 <@&701195716806180875>
